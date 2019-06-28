@@ -17,7 +17,7 @@ function help(msg, args) {
         color: 0x3498DB,
         timestamp: new Date().toISOString(),
         fields: commands.map(command => ({
-            name: command.help.name, 
+            name: command.help.name,
             value: command.help.description
         }))
     }});
