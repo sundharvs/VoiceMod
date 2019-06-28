@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const token = "";
-channel = ""
+const token = "NDI2NzUyNjc2NTc2MTAwMzUz.XRV62g.YesL9zcDhyOboNoa_W6AL8qzyFM";
+channel = null
 
 client.on('ready', () => {
     console.log("Ready");
@@ -17,7 +17,18 @@ client.on('message', msg => {
 
     if(command == "join"){
         if(!args.length){ //check whether there are any arguments
-            return msg.channel.send(`Please specify which voice channel I should moderate`);
+            if(msg.member.voiceChannel){
+                channel = msg.member.voiceChannel
+                channel.join()
+                .then(connection => { // Connection is an instance of VoiceConnection
+                    msg.reply(`Joined channel ${msg.member.voiceChannel.name}`);
+                })
+                .catch(e => {
+                    msg.channel.send(e);
+                });
+            } else {
+                return msg.channel.send(`Please specify which voice channel I should moderate`);
+            }
         } else {
             channel = client.channels.find(channel => channel.name === args[0]);
 
@@ -26,13 +37,13 @@ client.on('message', msg => {
                 channel.join().then(connection => {
                     msg.channel.send(`Joined channel ${args}`);
                 }).catch(e => {
-                    msg.channel.send("Error");
+                    msg.channel.send(e);
                 });
         }
     }
 
     if(command == "leave"){
-        if (typeof channel !== "") {
+        if (typeof channel !== null) {
             channel.leave();
             channel = "";
             msg.channel.send("Goodbye!");
