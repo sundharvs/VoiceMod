@@ -1,0 +1,25 @@
+{
+  "name": "voicemod",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "ibm-watson": "^4.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sundharvs/VoiceMod.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sundharvs/VoiceMod/issues"
+  },
+  "homepage": "https://github.com/sundharvs/VoiceMod#readme"
+}

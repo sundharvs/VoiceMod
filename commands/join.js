@@ -1,5 +1,8 @@
+const record = require("./record.js");
+
 function joinChannel(channel) {
-    channel.join()
+    record.run(channel);
+
     //TODO: call record()
     // TODO: fill this in
 }
