@@ -1,31 +1,29 @@
 const join = require('./commands/join.js');
 const leave = require('./commands/leave.js');
-const record = require('./commands/record.js');
 
 
 const commands = [
     help,
     join,
     leave,
-    record
 ];
 
 function help(msg, args) {
-    msg.channel.send({embed: {
-        title: "VoiceMod",
-        description: "A moderation tool for voice channels.",
-        color: 0x3498DB,
-        timestamp: new Date().toISOString(),
-        fields: commands.map(command => ({
-            name: command.help.name, 
-            value: command.help.description
-        }))
-    }});
+    msg.channel.send({
+        embed: {
+            title: 'VoiceMod',
+            description: 'A moderation tool for voice channels.',
+            fields: [{
+                name: 'Commands:',
+                value: commands.map(command => `**${command.help.name}**\n${command.help.description}`).join('\n')
+            }]
+        }
+    });
 }
 
 help.help = {
-    name: "help",
-    description: "This command. Lists every command along with their descriptions."
+    name: 'help',
+    description: 'This command. Lists every command along with their descriptions.'
 };
 
 module.exports = (() => {

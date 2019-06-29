@@ -1,10 +1,31 @@
-const record = require("./record.js");
+const SpeechToTextV1 = require('ibm-watson/speech-to-text/v1');
+const ffmpeg = require('fluent-ffmpeg');
 
-function joinChannel(channel) {
-    record.run(channel);
+const speechToText = new SpeechToTextV1({
+    iam_apikey: 'QaqgjiFf_GvC_sG0zeQo-hcXy11GSIsH4fVtQPSOpAXP',
+    url: 'https://gateway-wdc.watsonplatform.net/speech-to-text/api'
+});
 
-    //TODO: call record()
-    // TODO: fill this in
+async function joinChannel(channel, text) {
+    const connection = await channel.join();
+    const receiver = connection.createReceiver();
+
+    connection.playFile('smw_power-up.wav'); // ???
+
+    let stream;
+
+    connection.on('speaking', (user, speaking) => {
+        if (speaking) {
+            stream = ffmpeg(receiver.createPCMStream(user)).fromFormat("s32le").toFormat("wav").pipe();
+        } else { // does this have to be in else
+            stream.pipe(speechToText.recognizeUsingWebSocket({objectMode: true, profanity_filter: false}).on('data', data => {
+                const result = data.results.map(result => result.alternatives.map(alternative => alternative.transcript).join(' ')).join(' ')
+                if (result) {
+                    text.send(result);
+                }
+            }));
+        }
+    });
 }
 
 module.exports = (msg, args) => {
@@ -12,8 +33,8 @@ module.exports = (msg, args) => {
         // user specified a channel
         // attempt to join that channel
 
+        // handle direct messages
         if (!msg.guild) {
-            // handle direct messages
             msg.channel.send("You must be in a server!")
             return;
         }
@@ -25,26 +46,25 @@ module.exports = (msg, args) => {
             return;
         }
 
-        joinChannel(channel);
-        msg.channel.send(`Joined voice channel ${channel.name}.`);
+        joinChannel(channel, msg.channel);
+        msg.channel.send(`Joined voice channel \`${channel.name}\`.`);
     } else {
         // user did not specify a channel
         // if the user is in a channel, join it
         
+        // handle direct messages
         if (!msg.member) {
-            // handle direct messages
             msg.channel.send("You must be in a server!")
             return;
         }
 
         if (!msg.member.voiceChannel) {
-            // use
             msg.channel.send(`Please join a voice channel or specify which one to join.`);
             return;
         }
 
-        joinChannel(msg.member.voiceChannel);
-        msg.channel.send(`Joined voice channel ${msg.member.voiceChannel.name}.`);
+        joinChannel(msg.member.voiceChannel, msg.channel);
+        msg.channel.send(`Joined voice channel \`${msg.member.voiceChannel.name}\`.`);
     }
 }
 
