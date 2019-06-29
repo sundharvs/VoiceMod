@@ -48,6 +48,7 @@ module.exports = (msg, args) => {
 
         joinChannel(channel, msg.channel);
         msg.channel.send(`Joined voice channel \`${channel.name}\`.`);
+        msg.guild.me.user.setActivity(channel.name, { type: 'LISTENING' })
     } else {
         // user did not specify a channel
         // if the user is in a channel, join it
